@@ -47,3 +47,7 @@ next-env.d.ts
 # functions dependencies
 functions/node_modules
 functions/lib
+
+# Firebase build cache
+.firebase
+deploy.log
