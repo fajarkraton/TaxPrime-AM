@@ -1,0 +1,74 @@
+import { type Timestamp } from 'firebase/firestore';
+import type { GpuType, EncryptionStatus, OsLicenseType } from './enums';
+
+export interface HardwareSpec {
+    cpuBrand: string;
+    cpuModel: string;
+    cpuGeneration: string;
+    cpuCores: number;
+    cpuThreads: number;
+    cpuBaseClock: string;
+    cpuMaxClock: string;
+    gpuBrand: string;
+    gpuModel: string;
+    gpuVram: string;
+    gpuType: GpuType;
+    ramTotal: number;
+    ramType: string;
+    ramSpeed: string;
+    ramSlots: string;
+    ramModules: string;
+    storagePrimaryType: string;
+    storagePrimaryCapacity: string;
+    storagePrimaryModel: string;
+    storagePrimaryInterface: string;
+    storagePrimaryHealth: number;
+    storageSecondaryType?: string;
+    storageSecondaryCapacity?: string;
+    storageSecondaryModel?: string;
+    displaySize: string;
+    displayResolution: string;
+    displayPanel: string;
+    displayRefreshRate: string;
+    osName: string;
+    osVersion: string;
+    osBuild: string;
+    osLicenseType: OsLicenseType;
+    osLicenseKey: string;
+    wifiStandard: string;
+    bluetoothVersion: string;
+    ethernetSpeed: string;
+    macAddressWifi: string;
+    macAddressEthernet: string;
+    lastKnownIp: string;
+    hostname: string;
+    domainJoined: boolean;
+    domainName: string;
+    batteryCapacity?: string;
+    batteryHealth?: number;
+    batteryCycles?: number;
+    portsAndIO: string;
+    biosVersion: string;
+    antivirusName: string;
+    antivirusUpdated: Timestamp;
+    encryptionStatus: EncryptionStatus;
+    encryptionMethod: string;
+    benchmarkScore?: number;
+    benchmarkTool?: string;
+    benchmarkDate?: Timestamp;
+    diskSpeedRead?: number;
+    diskSpeedWrite?: number;
+    bootTime?: number;
+    lastAuditDate: Timestamp;
+    upgradeHistory: UpgradeRecord[];
+    specNotes: string;
+    updatedAt: Timestamp;
+    updatedBy: string;
+}
+
+export interface UpgradeRecord {
+    date: Timestamp;
+    component: string;
+    from: string;
+    to: string;
+}

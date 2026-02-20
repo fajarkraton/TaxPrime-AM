@@ -1,0 +1,140 @@
+[
+    {
+        "uid": "user-super-admin-001",
+        "email": "superadmin@taxprime.net",
+        "displayName": "Adi Purnomo",
+        "department": "IT",
+        "jobTitle": "Chief Technology Officer",
+        "role": "super_admin",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [],
+        "assignedAssetsCount": 0
+    },
+    {
+        "uid": "user-admin-001",
+        "email": "admin.it@taxprime.net",
+        "displayName": "Budi Santoso",
+        "department": "IT",
+        "jobTitle": "IT Manager",
+        "role": "admin",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-001"
+        ],
+        "assignedAssetsCount": 1
+    },
+    {
+        "uid": "user-it-001",
+        "email": "helpdesk@taxprime.net",
+        "displayName": "Candra Wijaya",
+        "department": "IT",
+        "jobTitle": "IT Support Specialist",
+        "role": "it_staff",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-002"
+        ],
+        "assignedAssetsCount": 1
+    },
+    {
+        "uid": "user-it-002",
+        "email": "sysadmin@taxprime.net",
+        "displayName": "Dewi Lestari",
+        "department": "IT",
+        "jobTitle": "System Administrator",
+        "role": "it_staff",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-003"
+        ],
+        "assignedAssetsCount": 1
+    },
+    {
+        "uid": "user-mgr-001",
+        "email": "manager.tax@taxprime.net",
+        "displayName": "Eko Prasetyo",
+        "department": "Tax Advisory",
+        "jobTitle": "Tax Advisory Manager",
+        "role": "manager",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-004"
+        ],
+        "assignedAssetsCount": 1
+    },
+    {
+        "uid": "user-mgr-002",
+        "email": "manager.compliance@taxprime.net",
+        "displayName": "Fitri Handayani",
+        "department": "Tax Compliance",
+        "jobTitle": "Tax Compliance Manager",
+        "role": "manager",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-005"
+        ],
+        "assignedAssetsCount": 1
+    },
+    {
+        "uid": "user-emp-001",
+        "email": "gita.sari@taxprime.net",
+        "displayName": "Gita Sari",
+        "department": "Tax Advisory",
+        "jobTitle": "Tax Consultant",
+        "role": "employee",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-006",
+            "asset-mon-001"
+        ],
+        "assignedAssetsCount": 2
+    },
+    {
+        "uid": "user-emp-002",
+        "email": "hendra.putra@taxprime.net",
+        "displayName": "Hendra Putra",
+        "department": "Tax Compliance",
+        "jobTitle": "Senior Tax Consultant",
+        "role": "employee",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-lpt-007"
+        ],
+        "assignedAssetsCount": 1
+    },
+    {
+        "uid": "user-emp-003",
+        "email": "indah.permata@taxprime.net",
+        "displayName": "Indah Permata",
+        "department": "Administration",
+        "jobTitle": "Office Administrator",
+        "role": "employee",
+        "photoUrl": "",
+        "isActive": true,
+        "assignedAssets": [
+            "asset-dsk-001",
+            "asset-prt-001"
+        ],
+        "assignedAssetsCount": 2
+    },
+    {
+        "uid": "user-emp-004",
+        "email": "joko.susanto@taxprime.net",
+        "displayName": "Joko Susanto",
+        "department": "Tax Advisory",
+        "jobTitle": "Tax Consultant",
+        "role": "employee",
+        "photoUrl": "",
+        "isActive": false,
+        "assignedAssets": [],
+        "assignedAssetsCount": 0
+    }
+]

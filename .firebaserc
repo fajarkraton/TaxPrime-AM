@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "taxprime-itams-dev",
+    "staging": "taxprime-itams-staging",
+    "production": "taxprime-itams"
+  }
+}

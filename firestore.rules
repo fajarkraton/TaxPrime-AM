@@ -1,0 +1,232 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ================================================================
+    // FUNGSI HELPER
+    // ================================================================
+
+    // Cek autentikasi
+    function sudahLogin() {
+      return request.auth != null;
+    }
+
+    // Ambil role dari custom claims
+    function ambilRole() {
+      return request.auth.token.role;
+    }
+
+    // Ambil department dari custom claims
+    function ambilDepartment() {
+      return request.auth.token.department;
+    }
+
+    // Cek role tertentu
+    function punyaRole(role) {
+      return sudahLogin() && ambilRole() == role;
+    }
+
+    // Role checks berjenjang
+    function isSuperAdmin() {
+      return punyaRole('super_admin');
+    }
+
+    function isAdminKeAtas() {
+      return isSuperAdmin() || punyaRole('admin');
+    }
+
+    function isITStaffKeAtas() {
+      return isAdminKeAtas() || punyaRole('it_staff');
+    }
+
+    function isManagerKeAtas() {
+      return isITStaffKeAtas() || punyaRole('manager');
+    }
+
+    // Cek pemilik dokumen
+    function adalahPemilik(userId) {
+      return sudahLogin() && request.auth.uid == userId;
+    }
+
+    // Cek departemen sama
+    function departemenSama(dept) {
+      return sudahLogin() && ambilDepartment() == dept;
+    }
+
+    // Validasi string
+    function stringValid(field, minLen, maxLen) {
+      return field is string && field.size() >= minLen && field.size() <= maxLen;
+    }
+
+    // Validasi data baru punya semua field wajib
+    function punyaFieldWajib(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Cek field mana saja yang berubah
+    function fieldYangBerubah() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ================================================================
+    // COLLECTION: assets
+    // ================================================================
+    match /assets/{assetId} {
+
+      allow read: if sudahLogin() && (
+        isITStaffKeAtas() ||
+        (punyaRole('manager') && departemenSama(resource.data.department)) ||
+        (punyaRole('employee') && resource.data.assignedTo == request.auth.uid)
+      );
+
+      allow create: if isAdminKeAtas() &&
+        punyaFieldWajib(['assetCode', 'name', 'category', 'type', 'status']) &&
+        stringValid(request.resource.data.name, 1, 200) &&
+        request.resource.data.type in ['tangible', 'intangible'] &&
+        request.resource.data.status in [
+          'procurement', 'in_stock', 'deployed',
+          'maintenance', 'reserved', 'retired', 'lost'
+        ];
+
+      allow update: if sudahLogin() && (
+        isAdminKeAtas() ||
+        (punyaRole('it_staff') && fieldYangBerubah().hasOnly([
+          'status', 'condition', 'notes', 'assignedTo', 'assignedToName',
+          'assignedToDepartment', 'assignedAt', 'location', 'updatedAt'
+        ]))
+      );
+
+      allow delete: if isSuperAdmin();
+
+      // Subcollection: hardwareSpecs
+      match /hardwareSpecs/{specId} {
+        allow read: if sudahLogin() && (
+          isITStaffKeAtas() ||
+          (punyaRole('manager') &&
+            departemenSama(get(/databases/$(database)/documents/assets/$(assetId)).data.department)) ||
+          (punyaRole('employee') &&
+            get(/databases/$(database)/documents/assets/$(assetId)).data.assignedTo == request.auth.uid)
+        );
+        allow create, update: if isITStaffKeAtas();
+        allow delete: if isAdminKeAtas();
+      }
+
+      // Subcollection: history (IMMUTABLE)
+      match /history/{historyId} {
+        allow read: if sudahLogin() && (
+          isITStaffKeAtas() ||
+          (punyaRole('manager') &&
+            departemenSama(get(/databases/$(database)/documents/assets/$(assetId)).data.department))
+        );
+        allow create: if sudahLogin() &&
+          punyaFieldWajib(['action', 'description', 'performedBy', 'performedAt']) &&
+          request.resource.data.performedBy == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // ================================================================
+    // COLLECTION: serviceTickets
+    // ================================================================
+    match /serviceTickets/{ticketId} {
+
+      allow read: if sudahLogin() && (
+        isITStaffKeAtas() ||
+        (punyaRole('manager') && departemenSama(resource.data.requesterDepartment)) ||
+        (punyaRole('employee') && adalahPemilik(resource.data.requesterId))
+      );
+
+      allow create: if sudahLogin() &&
+        punyaFieldWajib(['title', 'description', 'category', 'priority', 'requesterId']) &&
+        request.resource.data.requesterId == request.auth.uid &&
+        request.resource.data.status == 'open' &&
+        stringValid(request.resource.data.title, 1, 200) &&
+        request.resource.data.priority in ['low', 'medium', 'high', 'critical'] &&
+        request.resource.data.category in [
+          'hardware_repair', 'software_issue', 'replacement', 'new_request'
+        ];
+
+      allow update: if sudahLogin() && (
+        isITStaffKeAtas() ||
+        (adalahPemilik(resource.data.requesterId) &&
+          fieldYangBerubah().hasOnly(['status', 'rating', 'updatedAt']) &&
+          request.resource.data.status in ['closed', 'open'])
+      );
+
+      allow delete: if isSuperAdmin();
+
+      // Subcollection: comments (IMMUTABLE)
+      match /comments/{commentId} {
+        allow read: if sudahLogin() && (
+          isITStaffKeAtas() ||
+          (punyaRole('manager') &&
+            departemenSama(get(/databases/$(database)/documents/serviceTickets/$(ticketId)).data.requesterDepartment)) ||
+          adalahPemilik(get(/databases/$(database)/documents/serviceTickets/$(ticketId)).data.requesterId)
+        );
+        allow create: if sudahLogin() &&
+          request.resource.data.authorId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // ================================================================
+    // COLLECTION: subscriptions
+    // ================================================================
+    match /subscriptions/{subId} {
+      allow read: if sudahLogin() && isManagerKeAtas();
+      allow create, update: if isAdminKeAtas();
+      allow delete: if isSuperAdmin();
+    }
+
+    // ================================================================
+    // COLLECTION: users
+    // ================================================================
+    match /users/{userId} {
+      allow read: if sudahLogin() && (
+        isITStaffKeAtas() ||
+        (punyaRole('manager') && departemenSama(resource.data.department)) ||
+        adalahPemilik(userId)
+      );
+      allow create: if isAdminKeAtas();
+      allow update: if sudahLogin() && (
+        isAdminKeAtas() ||
+        (adalahPemilik(userId) &&
+          fieldYangBerubah().hasOnly(['lastLoginAt']))
+      );
+      allow delete: if isSuperAdmin();
+    }
+
+    // ================================================================
+    // COLLECTION: counters (system only via Admin SDK)
+    // ================================================================
+    match /counters/{counterId} {
+      allow read: if sudahLogin();
+      allow write: if false;
+    }
+
+    // ================================================================
+    // COLLECTION: auditTrails
+    // ================================================================
+    match /auditTrails/{trailId} {
+      allow read: if sudahLogin() && isITStaffKeAtas();
+      allow create: if sudahLogin();
+      allow update, delete: if false;
+    }
+
+    // ================================================================
+    // COLLECTION: settings
+    // ================================================================
+    match /settings/{docId} {
+      allow read: if sudahLogin();
+      allow write: if sudahLogin() && isSuperAdmin();
+    }
+
+    // ================================================================
+    // DEFAULT: Tolak semua yang tidak di-match
+    // ================================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

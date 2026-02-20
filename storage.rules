@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper: cek autentikasi
+    function sudahLogin() {
+      return request.auth != null;
+    }
+
+    function isITStaffKeAtas() {
+      return sudahLogin() && (
+        request.auth.token.role == 'super_admin' ||
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'it_staff'
+      );
+    }
+
+    // Foto aset
+    match /assets/photos/{assetId}/{fileName} {
+      allow read: if sudahLogin();
+      allow write: if isITStaffKeAtas()
+        && request.resource.size < 10 * 1024 * 1024  // Max 10MB
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // Dokumen aset (garansi, invoice, manual)
+    match /assets/documents/{assetId}/{fileName} {
+      allow read: if sudahLogin();
+      allow write: if isITStaffKeAtas()
+        && request.resource.size < 25 * 1024 * 1024; // Max 25MB
+    }
+
+    // Temporary exports (QR batch, PDF reports)
+    match /temp/{allPaths=**} {
+      allow read: if sudahLogin();
+      allow write: if false; // Hanya via Cloud Functions (Admin SDK)
+    }
+
+    // Ticket attachments
+    match /tickets/{ticketId}/{fileName} {
+      allow read: if sudahLogin();
+      allow write: if sudahLogin()
+        && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Default: tolak
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

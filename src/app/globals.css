@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Premium Light Theme: Off-white background, crisp white cards, slate text, indigo primary */
+    --background: 210 40% 98%;      /* Very soft slate-tinted off-white */
+    --foreground: 222 47% 11%;      /* Deep slate / almost black */
+
+    --card: 0 0% 100%;              /* Pure white */
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 235 86% 65%;         /* Vibrant Indigo / Electric Blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 214 32% 91%;       /* Soft slate */
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;    /* Muted slate text */
+
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 235 86% 65%;
+
+    --chart-1: 235 86% 65%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    --radius: 0.75rem; /* Larger, smoother border radius for modern look */
+  }
+
+  .dark {
+    /* Premium Dark Theme: Deep Onyx background, slightly lighter cards, avoiding absolute black */
+    --background: 224 71% 4%;       /* Deep Onyx / Navy black */
+    --foreground: 210 40% 98%;      /* Off-white text */
+
+    --card: 222 47% 11%;            /* Elevated surface color */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 235 86% 65%;         /* Keep primary vibrant in dark mode */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 217 33% 17%;       /* Slate gray */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 235 86% 65%;
+
+    --chart-1: 235 86% 65%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground tracking-tight;
+  }
+}

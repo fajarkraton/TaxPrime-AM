@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: ITAMS TaxPrime API
+  description: API spesifikasi untuk modul Inventaris Aset IT (ITAMS) TaxPrime. Digunakan oleh integrasi eksternal atau script utilitas internal.
+  version: 1.0.0
+servers:
+  - url: https://itams.taxprime.net/api
+    description: Production Server
+
+paths:
+  /assets:
+    get:
+      summary: Mendapatkan daftar semua aset
+      description: Retrieve list of all IT assets with optional query parameters for filtering.
+      responses:
+        '200':
+          description: Berhasil mendapatkan array asset
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+    post:
+      summary: Meregistrasi aset baru
+      responses:
+        '201':
+          description: Aset dikonfirmasi
+  /workspace/sync:
+    post:
+      summary: Memicu sinkronisasi user Google Workspace (Admin Only)
+      responses:
+        '200':
+          description: Sinkronisasi sukses
+
+components:
+  schemas:
+    Asset:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+          enum: [installed, in_stock, maintenance, retired]
+      required:
+        - id
+        - name
